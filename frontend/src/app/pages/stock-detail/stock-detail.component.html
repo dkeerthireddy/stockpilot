@@ -1,0 +1,277 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Header with Quote -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+    <div *ngIf="isLoadingQuote" class="animate-pulse">
+      <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
+      <div class="h-12 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+    </div>
+
+    <div *ngIf="!isLoadingQuote && quote">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ quote.symbol }}</h1>
+          <p class="text-gray-600 dark:text-gray-400 mt-1">{{ quote.name }}</p>
+          <span class="text-sm text-gray-500 dark:text-gray-500">{{ quote.exchange }}</span>
+        </div>
+        <button
+          (click)="toggleWatchlist()"
+          [class.text-yellow-500]="isInWatchlist"
+          [class.text-gray-400]="!isInWatchlist"
+          class="text-3xl hover:scale-110 transition-transform"
+          [attr.aria-label]="isInWatchlist ? 'Remove from watchlist' : 'Add to watchlist'">
+          {{ isInWatchlist ? '⭐' : '☆' }}
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Price</div>
+          <div class="text-2xl font-bold text-gray-900 dark:text-white">
+            {{ formatCurrency(quote.price) }}
+          </div>
+        </div>
+        <div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Change</div>
+          <div class="text-2xl font-bold" [ngClass]="getChangeColor(quote.change)">
+            {{ getChangeIcon(quote.change) }} {{ formatCurrency(quote.change) }}
+          </div>
+        </div>
+        <div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Change %</div>
+          <div class="text-2xl font-bold" [ngClass]="getChangeColor(quote.changePercent)">
+            {{ formatPercent(quote.changePercent) }}
+          </div>
+        </div>
+        <div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Volume</div>
+          <div class="text-2xl font-bold text-gray-900 dark:text-white">
+            {{ formatVolume(quote.volume) }}
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Open</div>
+          <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ formatCurrency(quote.open) }}</div>
+        </div>
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">High</div>
+          <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ formatCurrency(quote.high) }}</div>
+        </div>
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Low</div>
+          <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ formatCurrency(quote.low) }}</div>
+        </div>
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Prev Close</div>
+          <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ formatCurrency(quote.previousClose) }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">Price Chart</h2>
+      <div class="flex space-x-2">
+        <button
+          *ngFor="let range of chartRanges"
+          (click)="changeRange(range.value)"
+          [class.bg-primary-600]="selectedRange === range.value"
+          [class.text-white]="selectedRange === range.value"
+          [class.bg-gray-100]="selectedRange !== range.value"
+          [class.dark:bg-gray-700]="selectedRange !== range.value"
+          class="px-3 py-1 rounded text-sm font-medium transition">
+          {{ range.label }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="isLoadingChart" class="h-64 flex items-center justify-center">
+      <div class="animate-spin h-12 w-12 border-4 border-primary-500 border-t-transparent rounded-full"></div>
+    </div>
+
+    <div *ngIf="!isLoadingChart && historicalData.length > 0" class="h-64">
+      <div class="space-y-1">
+        <div *ngFor="let price of historicalData.slice(-10)" class="flex justify-between text-sm">
+          <span class="text-gray-600 dark:text-gray-400">{{ price.date }}</span>
+          <span class="font-semibold text-gray-900 dark:text-white">{{ formatCurrency(price.close) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6 mb-6">
+    <!-- Fundamentals -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Fundamentals</h2>
+
+      <div *ngIf="isLoadingFundamentals" class="space-y-3">
+        <div class="animate-pulse h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        <div class="animate-pulse h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        <div class="animate-pulse h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+      </div>
+
+      <div *ngIf="!isLoadingFundamentals && fundamentals" class="space-y-4">
+        <div class="flex justify-between items-start group">
+          <div>
+            <span class="text-sm text-gray-600 dark:text-gray-400">Market Cap</span>
+            <span class="ml-2 text-xs text-gray-400 cursor-help" [title]="getExplanation('Market Cap')">ℹ️</span>
+          </div>
+          <span class="text-sm font-semibold text-gray-900 dark:text-white">
+            {{ formatLargeNumber(fundamentals.marketCap) }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-start group">
+          <div>
+            <span class="text-sm text-gray-600 dark:text-gray-400">P/E Ratio</span>
+            <span class="ml-2 text-xs text-gray-400 cursor-help" [title]="getExplanation('P/E Ratio')">ℹ️</span>
+          </div>
+          <span class="text-sm font-semibold text-gray-900 dark:text-white">
+            {{ fundamentals.peRatio?.toFixed(2) || 'N/A' }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-sm text-gray-600 dark:text-gray-400">EPS</span>
+            <span class="ml-2 text-xs text-gray-400 cursor-help" [title]="getExplanation('EPS')">ℹ️</span>
+          </div>
+          <span class="text-sm font-semibold text-gray-900 dark:text-white">
+            {{ formatCurrency(fundamentals.eps) }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-sm text-gray-600 dark:text-gray-400">Beta</span>
+            <span class="ml-2 text-xs text-gray-400 cursor-help" [title]="getExplanation('Beta')">ℹ️</span>
+          </div>
+          <span class="text-sm font-semibold text-gray-900 dark:text-white">
+            {{ fundamentals.beta?.toFixed(2) || 'N/A' }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-start">
+          <span class="text-sm text-gray-600 dark:text-gray-400">52-Week High</span>
+          <span class="text-sm font-semibold text-gray-900 dark:text-white">
+            {{ formatCurrency(fundamentals.fiftyTwoWeekHigh) }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-start">
+          <span class="text-sm text-gray-600 dark:text-gray-400">52-Week Low</span>
+          <span class="text-sm font-semibold text-gray-900 dark:text-white">
+            {{ formatCurrency(fundamentals.fiftyTwoWeekLow) }}
+          </span>
+        </div>
+
+        <div *ngIf="fundamentals.sector" class="pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Sector</div>
+          <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ fundamentals.sector }}</div>
+        </div>
+
+        <div *ngIf="fundamentals.industry">
+          <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Industry</div>
+          <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ fundamentals.industry }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Risk Analysis -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Risk Analysis</h2>
+
+      <div *ngIf="analysis" class="space-y-4">
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm text-gray-600 dark:text-gray-400">Risk Level</span>
+            <span class="px-3 py-1 rounded-full text-sm font-semibold" [ngClass]="riskColors[analysis.riskLevel]">
+              {{ analysis.riskLevel }}
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <span class="text-sm text-gray-600 dark:text-gray-400">Volatility</span>
+              <span class="ml-2 text-xs text-gray-400 cursor-help" [title]="getExplanation('Volatility')">ℹ️</span>
+            </div>
+            <span class="text-sm font-semibold text-gray-900 dark:text-white">
+              {{ analysis.volatility?.toFixed(2) }}%
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <span class="text-sm text-gray-600 dark:text-gray-400">Max Drawdown</span>
+              <span class="ml-2 text-xs text-gray-400 cursor-help" [title]="getExplanation('Max Drawdown')">ℹ️</span>
+            </div>
+            <span class="text-sm font-semibold text-red-600">
+              {{ analysis.maxDrawdown?.toFixed(2) }}%
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm text-gray-600 dark:text-gray-400">Returns (Period)</span>
+            <span class="text-sm font-semibold" [ngClass]="getChangeColor(analysis.returns)">
+              {{ formatPercent(analysis.returns) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            💡 <strong>Tip:</strong> Higher volatility means larger price swings. Consider your risk tolerance before investing.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Company Description -->
+  <div *ngIf="fundamentals?.description" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">About {{ fundamentals.name }}</h2>
+    <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+      {{ fundamentals.description }}
+    </p>
+  </div>
+
+  <!-- News -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Latest News</h2>
+
+    <div *ngIf="isLoadingNews" class="space-y-4">
+      <div *ngFor="let i of [1,2,3]" class="animate-pulse">
+        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+        <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoadingNews && news.length > 0" class="space-y-4">
+      <a *ngFor="let article of news" 
+         [href]="article.url" 
+         target="_blank"
+         class="block p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-2">{{ article.title }}</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ article.summary }}</p>
+        <div class="flex justify-between items-center text-xs text-gray-500 dark:text-gray-500">
+          <span>{{ article.source }}</span>
+          <span>{{ formatDateTime(article.publishedAt) }}</span>
+        </div>
+      </a>
+    </div>
+
+    <div *ngIf="!isLoadingNews && news.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
+      No recent news available
+    </div>
+  </div>
+</div>

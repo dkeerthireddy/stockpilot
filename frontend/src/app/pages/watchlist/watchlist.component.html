@@ -1,0 +1,136 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">My Watchlist</h1>
+    <button
+      *ngIf="watchlist.length > 0"
+      (click)="clearWatchlist()"
+      class="text-sm text-red-600 hover:text-red-700 dark:text-red-400">
+      Clear All
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="watchlist.length === 0" 
+       class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
+    <div class="text-6xl mb-4">⭐</div>
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+      Your watchlist is empty
+    </h2>
+    <p class="text-gray-600 dark:text-gray-400 mb-6">
+      Start adding stocks to track your favorites and monitor their performance.
+    </p>
+    <a routerLink="/search" 
+       class="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition">
+      Search Stocks
+    </a>
+  </div>
+
+  <!-- Watchlist Table (Desktop) -->
+  <div *ngIf="watchlist.length > 0" class="hidden md:block bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <thead class="bg-gray-50 dark:bg-gray-700">
+        <tr>
+          <th (click)="changeSortBy('symbol')" 
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600">
+            Symbol {{ sortBy === 'symbol' ? (sortAsc ? '↑' : '↓') : '' }}
+          </th>
+          <th (click)="changeSortBy('name')"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600">
+            Name {{ sortBy === 'name' ? (sortAsc ? '↑' : '↓') : '' }}
+          </th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            Price
+          </th>
+          <th (click)="changeSortBy('change')"
+              class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600">
+            Change {{ sortBy === 'change' ? (sortAsc ? '↑' : '↓') : '' }}
+          </th>
+          <th (click)="changeSortBy('changePercent')"
+              class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600">
+            Change % {{ sortBy === 'changePercent' ? (sortAsc ? '↑' : '↓') : '' }}
+          </th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+        <tr *ngFor="let item of watchlist" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <button (click)="viewStock(item.symbol)" 
+                    class="text-sm font-bold text-primary-600 dark:text-primary-400 hover:underline">
+              {{ item.symbol }}
+            </button>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900 dark:text-white">{{ item.name }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <div class="text-sm font-semibold text-gray-900 dark:text-white">
+              {{ formatCurrency(item.price) }}
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <div class="text-sm font-semibold" [ngClass]="getChangeColor(item.change)">
+              {{ formatCurrency(item.change) }}
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <div class="text-sm font-semibold" [ngClass]="getChangeColor(item.changePercent)">
+              {{ formatPercent(item.changePercent) }}
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <button
+              (click)="removeFromWatchlist(item.symbol)"
+              class="text-red-600 hover:text-red-700 dark:text-red-400 text-sm"
+              title="Remove from watchlist">
+              Remove
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Watchlist Cards (Mobile) -->
+  <div *ngIf="watchlist.length > 0" class="md:hidden space-y-4">
+    <div *ngFor="let item of watchlist" 
+         class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+      <div class="flex justify-between items-start mb-2">
+        <div>
+          <button (click)="viewStock(item.symbol)" 
+                  class="text-lg font-bold text-primary-600 dark:text-primary-400">
+            {{ item.symbol }}
+          </button>
+          <div class="text-sm text-gray-600 dark:text-gray-400">{{ item.name }}</div>
+        </div>
+        <button
+          (click)="removeFromWatchlist(item.symbol)"
+          class="text-red-600 hover:text-red-700 dark:text-red-400 text-sm">
+          Remove
+        </button>
+      </div>
+      <div class="grid grid-cols-3 gap-2 mt-3">
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Price</div>
+          <div class="font-semibold text-gray-900 dark:text-white">
+            {{ formatCurrency(item.price) }}
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Change</div>
+          <div class="font-semibold" [ngClass]="getChangeColor(item.change)">
+            {{ formatCurrency(item.change) }}
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Change %</div>
+          <div class="font-semibold" [ngClass]="getChangeColor(item.changePercent)">
+            {{ formatPercent(item.changePercent) }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

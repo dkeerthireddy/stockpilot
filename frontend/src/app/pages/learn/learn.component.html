@@ -1,0 +1,111 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Learning Center</h1>
+  <p class="text-lg text-gray-600 dark:text-gray-300 mb-12">
+    Build your investing knowledge with these essential concepts and tips.
+  </p>
+
+  <!-- Investing Glossary -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">📚 Investing Glossary</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div *ngFor="let term of glossaryTerms" 
+           class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-bold text-primary-600 dark:text-primary-400 mb-2">
+          {{ term.term }}
+        </h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-2">
+          {{ term.definition }}
+        </p>
+        <p *ngIf="term.example" class="text-sm text-gray-600 dark:text-gray-400 italic">
+          Example: {{ term.example }}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Common Beginner Mistakes -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">⚠️ Common Beginner Mistakes</h2>
+    <div class="space-y-4">
+      <div *ngFor="let item of beginnerMistakes" 
+           class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="flex items-start">
+          <div class="flex-shrink-0 text-2xl mr-4">❌</div>
+          <div class="flex-grow">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
+              {{ item.mistake }}
+            </h3>
+            <p class="text-gray-700 dark:text-gray-300">
+              <strong class="text-green-600 dark:text-green-400">✓ Better approach:</strong> 
+              {{ item.advice }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How to Read Charts -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">📈 How to Read Stock Charts</h2>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <p class="text-gray-700 dark:text-gray-300 mb-4">
+        Stock charts visualize price movements over time. Here are key concepts:
+      </p>
+      <ul class="space-y-3">
+        <li *ngFor="let tip of chartReadingTips" 
+            class="flex items-start">
+          <span class="text-primary-600 dark:text-primary-400 mr-3 flex-shrink-0">•</span>
+          <span class="text-gray-700 dark:text-gray-300">{{ tip }}</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Key Principles -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">💡 Key Investment Principles</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded-lg p-6">
+        <div class="text-3xl mb-3">🎯</div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Set Clear Goals</h3>
+        <p class="text-gray-700 dark:text-gray-300">
+          Define your time horizon, risk tolerance, and financial objectives before investing.
+        </p>
+      </div>
+      
+      <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 rounded-lg p-6">
+        <div class="text-3xl mb-3">⏳</div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Think Long-Term</h3>
+        <p class="text-gray-700 dark:text-gray-300">
+          Historical data shows markets trend upward over decades. Patience pays off.
+        </p>
+      </div>
+      
+      <div class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 rounded-lg p-6">
+        <div class="text-3xl mb-3">📊</div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Stay Informed</h3>
+        <p class="text-gray-700 dark:text-gray-300">
+          Keep learning, follow market news, but don\'t let headlines drive every decision.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Disclaimer Box -->
+  <div class="bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-400 p-6 rounded-lg">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-yellow-700 dark:text-yellow-200">
+          <strong>Educational Purpose Only:</strong> This information is for learning purposes and not financial advice. 
+          Always consult with a qualified financial advisor before making investment decisions.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
