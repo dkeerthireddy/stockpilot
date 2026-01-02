@@ -9,20 +9,20 @@
 export function formatPercent(value: number | null | undefined): string {
   if (value == null) return '0.00%';
   const sign = value >= 0 ? '+' : '';
-  return ${sign}%;
+  return `${sign}${value.toFixed(2)}%`;
 }
 
 export function formatLargeNumber(value: number | null | undefined): string {
   if (value == null) return 'N/A';
   
   if (value >= 1_000_000_000_000) {
-    return $T;
+    return `$${(value / 1_000_000_000_000).toFixed(2)}T`;
   } else if (value >= 1_000_000_000) {
-    return $B;
+    return `$${(value / 1_000_000_000).toFixed(2)}B`;
   } else if (value >= 1_000_000) {
-    return $M;
+    return `$${(value / 1_000_000).toFixed(2)}M`;
   } else if (value >= 1_000) {
-    return $K;
+    return `$${(value / 1_000).toFixed(2)}K`;
   }
   return formatCurrency(value);
 }
@@ -31,11 +31,11 @@ export function formatVolume(value: number | null | undefined): string {
   if (value == null) return 'N/A';
   
   if (value >= 1_000_000_000) {
-    return ${(value / 1_000_000_000).toFixed(2)}B;
+    return `${(value / 1_000_000_000).toFixed(2)}B`;
   } else if (value >= 1_000_000) {
-    return ${(value / 1_000_000).toFixed(2)}M;
+    return `${(value / 1_000_000).toFixed(2)}M`;
   } else if (value >= 1_000) {
-    return ${(value / 1_000).toFixed(2)}K;
+    return `${(value / 1_000).toFixed(2)}K`;
   }
   return value.toString();
 }
