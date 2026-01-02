@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { WatchlistService } from '../../../services/watchlist.service';
 import { WatchlistItem } from '../../../models/stock.model';
 import { formatCurrency, formatPercent, getChangeColor } from '../../../utils/format.utils';
@@ -8,7 +8,7 @@ import { formatCurrency, formatPercent, getChangeColor } from '../../../utils/fo
 @Component({
   selector: 'app-watchlist',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './watchlist.component.html',
   styleUrls: ['./watchlist.component.css'],
 })

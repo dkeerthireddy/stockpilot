@@ -52,8 +52,8 @@ export class SearchComponent {
   }
 
   updateFilters(): void {
-    this.exchanges = [...new Set(this.searchResults.map(r => r.exchange).filter(e => e))];
-    this.sectors = [...new Set(this.searchResults.map(r => r.sector).filter(s => s))];
+    this.exchanges = [...new Set(this.searchResults.map(r => r.exchange).filter(e => e))] as string[];
+    this.sectors = [...new Set(this.searchResults.map(r => r.sector).filter(s => s))] as string[];
   }
 
   applyFilters(): void {
